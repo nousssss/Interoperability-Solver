@@ -117,7 +117,7 @@ public class ImportPetriNets {
 		Collection<Marking> finalMarkings = new HashSet<Marking>();
 		GraphLayoutConnection layout = new GraphLayoutConnection(net);
 		 // convert the pnml into a petrinet
-		pnml.convertToNet(net, marking, finalMarkings, layout);
+		pnml.convertToNet(net, marking, finalMarkings, layout); // HOTFIX
 		Object[] objects = new Object[2];
 		objects[0] = net;
 		objects[1] = marking;

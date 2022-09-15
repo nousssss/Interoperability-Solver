@@ -1,0 +1,5 @@
+package org.processmining.plugins.nouss;
+
+public interface Petrinet {
+
+}
