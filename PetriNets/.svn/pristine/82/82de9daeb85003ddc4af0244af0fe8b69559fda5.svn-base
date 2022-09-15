@@ -1,0 +1,18 @@
+print("Testing import and export of configurable Petri nets...");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+print("Loading file");
+net_and_marking = import_petri_net_from_pnml_file(testFileRoot+"/pn_test.pnml");
+
+print("Getting and testing net");
+org.processmining.models.graphbased.directed.petrinet.Petrinet net = (org.processmining.models.graphbased.directed.petrinet.Petrinet)net_and_marking[0];
+junit.framework.Assert.assertNotNull("Net is not null", net);
+
+print("Exporting net to file");
+pnml_export_petri_net_(net, new File(testFileRoot+"/pn_test_export.pnml"));
+
+print("Checking and deleting file");
+java.io.File exportedFile = new java.io.File(testFileRoot+"/pn_test_export.pnml");
+junit.framework.Assert.assertTrue("Exported file exists.", exportedFile.exists());
+exportedFile.deleteOnExit();

@@ -1,0 +1,24 @@
+print("Testing import and export of configurable Petri nets...");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+print("Loading file");
+net_and_marking = import_configurable_reset_inhibitor_net_from_pnml_file(testFileRoot+"/configurable_test_allplaces.pnml");
+
+print("Getting and testing net");
+org.processmining.models.graphbased.directed.petrinet.configurable.impl.ConfigurableResetInhibitorNet net = (org.processmining.models.graphbased.directed.petrinet.configurable.impl.ConfigurableResetInhibitorNet)net_and_marking[0];
+junit.framework.Assert.assertNotNull("Net is not null", net);
+
+print("Creating configuration");
+org.processmining.models.graphbased.directed.petrinet.configurable.Configuration configuration = new org.processmining.models.graphbased.directed.petrinet.configurable.Configuration("allplaces");
+configuration.put("presence", org.processmining.models.graphbased.directed.petrinet.configurable.impl.ConfigurableGraphElementOption.BLOCK);
+configurations = new java.util.LinkedList();
+configurations.add(configuration);
+
+print("Configuring");
+configured = configure_petri_net_completely(net, configurations);
+
+print("Testing result");
+org.processmining.models.graphbased.directed.petrinet.PetrinetGraph configured_net = (org.processmining.models.graphbased.directed.petrinet.PetrinetGraph)configured[0];
+junit.framework.Assert.assertTrue("All places blocked", configured_net.getPlaces().isEmpty());
+ 

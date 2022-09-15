@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="java.util.Collection"/>
+    <fullyQualifiedTypeName name="java.io.File"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.pnml.base.Pnml"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.pnml.base.FullPnmlElementFactory"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.PetrinetGraph"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.impl.PetrinetFactory"/>
+    <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.Marking"/>
+</qualifiedTypeNameHistroy>
