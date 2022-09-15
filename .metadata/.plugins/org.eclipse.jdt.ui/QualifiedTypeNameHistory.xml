@@ -4,7 +4,22 @@
     <fullyQualifiedTypeName name="java.io.File"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.pnml.base.Pnml"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.pnml.base.FullPnmlElementFactory"/>
-    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.PetrinetGraph"/>
     <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.impl.PetrinetFactory"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.PetrinetGraph"/>
+    <fullyQualifiedTypeName name="org.deckfour.xes.model.XLog"/>
+    <fullyQualifiedTypeName name="org.deckfour.xes.classification.XEventClass"/>
+    <fullyQualifiedTypeName name="org.deckfour.xes.classification.XEventClassifier"/>
+    <fullyQualifiedTypeName name="org.deckfour.xes.info.XLogInfo"/>
+    <fullyQualifiedTypeName name="org.deckfour.xes.info.XLogInfoFactory"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.elements.Transition"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.Petrinet"/>
     <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.Marking"/>
+    <fullyQualifiedTypeName name="org.processmining.framework.plugin.annotations.Plugin"/>
+    <fullyQualifiedTypeName name="org.processmining.contexts.uitopia.annotations.UITopiaVariant"/>
+    <fullyQualifiedTypeName name="org.processmining.framework.plugin.PluginContext"/>
+    <fullyQualifiedTypeName name="org.processmining.contexts.uitopia.UIPluginContext"/>
+    <fullyQualifiedTypeName name="org.deckfour.uitopia.api.event.TaskListener.InteractionResult"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping"/>
+    <fullyQualifiedTypeName name="org.processmining.models.connections.petrinets.EvClassLogPetrinetConnection"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.etconformance.ETCResults"/>
 </qualifiedTypeNameHistroy>

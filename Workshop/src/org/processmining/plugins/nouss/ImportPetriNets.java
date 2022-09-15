@@ -27,11 +27,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public class ImportPetriNets {
 	
-    private static String  pnml_URI= null;  //the path to the XES file
+    private static String  pnml_URI= null;  //the path to the PNML file
 	
+ // Imports a PNML file (gets the path to the file)
     private static String importPnmlFile() {
-		int accepted=0;
-		
 		try 
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -52,18 +51,10 @@ public class ImportPetriNets {
 		 	 {
 		 	       // get the path to the file
 			  	String path= fc.getSelectedFile().getAbsolutePath();
-			  	// idk what t does
-			  	//String temp = path.replaceAll("\\\\", "/");
-
-			 	//path= "file:"+path;
-			  	System.out.println("--------------------------------\n\n");
-			  
-			  	System.out.println(path);
 			  	pnml_URI = path;
-			  	accepted=1;
 			  	return path;
-		        }
-		}
+		     }
+		 }
 		
 		catch (Exception e)
 		{
@@ -73,8 +64,8 @@ public class ImportPetriNets {
 		return null;
 	}
 
-	
-	public Pnml importPnmlFromStream(InputStream input, String filename, long fileSizeInBytes) 
+// import and parse a pnml object from the imported file	
+	private static Pnml importPnmlFromStream(InputStream input, String filename) 
 			throws XmlPullParserException, IOException {
 		
 		       // Instantiate the PNML elements factory
@@ -82,14 +73,14 @@ public class ImportPetriNets {
 			   // the same for the XML parser factory
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 			factory.setNamespaceAware(true);
-			   // get an xml parser
+			   // generate a parser from the factory
 			XmlPullParser xpp = factory.newPullParser();
 			   // give the parser its input (our input stream -the file-)
 			xpp.setInput(input, null);
 			int eventType = xpp.getEventType();
 			   // a pnml object
 			Pnml pnml = new Pnml();
-			
+               // shared stuff zone - one thread at a time -
 			synchronized (pnmlFactory)
 			 {
 				pnml.setFactory(pnmlFactory);
@@ -118,14 +109,14 @@ public class ImportPetriNets {
 	}
 	
 	
-	
-	public Object[] connectNet(Pnml pnml, PetrinetGraph net)
-	 {  // Return the net and the marking.
+// Convert the parsed pnml object into a petrinet
+	private static Object[] connectNet(Pnml pnml, PetrinetGraph net)
+	 {  // Returns the net and the marking.
 		
 		Marking marking = new Marking();
 		Collection<Marking> finalMarkings = new HashSet<Marking>();
 		GraphLayoutConnection layout = new GraphLayoutConnection(net);
-		 // convert the pnml into a petrinet (with 
+		 // convert the pnml into a petrinet
 		pnml.convertToNet(net, marking, finalMarkings, layout);
 		Object[] objects = new Object[2];
 		objects[0] = net;
@@ -136,23 +127,23 @@ public class ImportPetriNets {
 	 }
 	
 	
-	 public Object[] importFromStream(InputStream input, String filename, long fileSizeInBytes) throws
-		XmlPullParserException, IOException 
-	 {
-		Pnml pnml = importPnmlFromStream(input, filename, fileSizeInBytes);
-		if (pnml == null) 
-		  {
-		   // No PNML found in file. Fail.
-		   return null;
-		  }
-		PetrinetGraph net = PetrinetFactory.newPetrinet(pnml.getLabel());
-		return connectNet(pnml, net);
-	  }
-		
-	 public Object[] importFromFile() throws Exception 
+// Reads a petri net from a pnml file	
+	 public static Object[] readPNFromFile() throws XmlPullParserException, IOException , Exception 
 	  {
+		      // get the path to the file
 		    String filename = importPnmlFile();
 			File file = new File(filename);
-			return importFromStream(new FileInputStream(file), filename,file.length());
+			FileInputStream input = new FileInputStream(file);
+			  // get the pnml object from the imported file
+			Pnml pnml = importPnmlFromStream(input, filename);
+			if (pnml == null) 
+			  {
+			   // No PNML found in file. Fail.
+			   return null;
+			  }
+			  // make a petrinet out of it
+			PetrinetGraph net = PetrinetFactory.newPetrinet(pnml.getLabel());
+			return connectNet(pnml, net);
+			
 	  }
 }
