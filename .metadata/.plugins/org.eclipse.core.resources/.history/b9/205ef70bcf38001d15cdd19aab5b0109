@@ -1,0 +1,61 @@
+package org.processmining.plugins.nouss;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import com.fluxicon.slickerbox.factory.SlickerFactory;
+
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstants;
+
+public class PluginDialog extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7639879370139576539L;
+
+	/**
+	 * Parameter dialog for mining the given event log for a workflow model.
+	 * 
+	 * @param log
+	 *            The given event log.
+	 * @param parameters
+	 *            The parameters which will be used for the mining.
+	 */
+	public PluginDialog() {
+		/*
+		 * Get a layout containing a single column and two rows, where the top
+		 * row height equals 30.
+		 */
+		double size[][] = { { TableLayoutConstants.FILL }, { 30, TableLayoutConstants.FILL } };
+		setLayout(new TableLayout(size));
+
+		/*
+		 * Put a meaningful text in the top row.
+		 */
+		add(SlickerFactory.instance().createLabel("<html><h2>Select mining parameters</h2>"), "0, 0");
+        
+		JButton importXes = new JButton("Importer un fichier XES");
+		JButton importPnml = new JButton("Importer un fichier PNML");
+		
+		add(importXes);
+		add(importPnml);
+		
+		importXes.addActionListener(new ActionListener(){  
+			public void actionPerformed(ActionEvent e){  
+	             
+	        }  
+	    });  ;
+	    
+		importPnml.addActionListener(new ActionListener(){  
+			public void actionPerformed(ActionEvent e){  
+	             
+	        }  
+	    });  ;
+		
+	}
+}

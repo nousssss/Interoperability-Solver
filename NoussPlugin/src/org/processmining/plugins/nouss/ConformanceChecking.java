@@ -84,6 +84,7 @@ public class ConformanceChecking {
 	  )
 	
 	public static Object[] check(PluginContext context) throws Exception {
+		//PluginDialog dialog = new PluginDialog();
 		   //import the log 
 		XLog log = ImportLog.readLogFromFile();
 		System.out.println("I imported the xes");

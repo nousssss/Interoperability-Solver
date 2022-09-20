@@ -1,0 +1,78 @@
+package org.processmining.plugins.nouss;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import org.deckfour.xes.model.XLog;
+import org.xmlpull.v1.XmlPullParserException;
+
+import com.fluxicon.slickerbox.factory.SlickerFactory;
+
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstants;
+
+public class PluginDialog extends JPanel {
+
+
+	private static final long serialVersionUID = 1L;
+
+	public PluginDialog() throws Exception {
+		/*
+		 * Get a layout containing a single column and two rows, where the top
+		 * row height equals 30.
+		 */
+		double size[][] = { { TableLayoutConstants.FILL }, { 30, TableLayoutConstants.FILL } };
+		setLayout(new TableLayout(size));
+
+		/*
+		 * Put a meaningful text in the top row.
+		 */
+		add(SlickerFactory.instance().createLabel("<html><h2>Select mining parameters</h2>"), "0, 0");
+        
+		JButton importXes = new JButton("Importer un fichier XES");
+		JButton importPnml = new JButton("Importer un fichier PNML");
+		
+		JButton cancel = new JButton("Annuler");
+		JButton next = new JButton("Continuer");
+		
+		boolean xesImported = false;
+		boolean pnmlImported = false;
+		
+		final XLog log = null;
+		
+		
+		add(importXes);
+		add(importPnml);
+		add(cancel);
+		add(next);
+		
+		next.setEnabled(false);
+		
+		
+		while (!xesImported && !pnmlImported) {
+			importXes.addActionListener( new ActionListener() {  
+				public void actionPerformed(ActionEvent x){  
+							
+					
+		        }  
+		    }); 
+		    
+			importPnml.addActionListener(new ActionListener(){  
+				public void actionPerformed(ActionEvent p){  
+					try {
+						Object[] petri = ImportPetriNets.readPNFromFile();
+					} catch (Exception e) {
+						//ignore
+					}
+					
+		        }  
+		    });  
+		}
+		
+		
+	}
+}
