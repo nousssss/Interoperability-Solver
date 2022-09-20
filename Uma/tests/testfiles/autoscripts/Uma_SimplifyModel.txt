@@ -1,0 +1,44 @@
+print("Simplify a mined Petri net...");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+//---------------------------------------------------
+print("1) Opening log file...");
+
+// Use the name of the plugin (in lowercase) to open a log
+	
+org.deckfour.xes.model.XLog log = open_xes_log_file(testFileRoot+"/grouped_a12f0n00.xes");
+
+print(" id of the opened log: " + log);
+
+junit.framework.Assert.assertNotNull("Log is not null", log);
+
+//---------------------------------------------------
+print("2) Mining using the alpha miner...");
+
+res = import_petri_net_from_pnml_file(testFileRoot+"/grouped_a12f0n00.pnml");
+
+pnet = res[0];
+marking = res[1];
+	
+print("   net: " + pnet);
+print("   marking: " + marking);
+
+junit.framework.Assert.assertNotNull("Petri net is not null", pnet);
+junit.framework.Assert.assertNotNull("Marking net is not null", marking);
+
+//---------------------------------------------------
+print("3) Simplifying net...");
+
+hub.top.uma.view.MineSimplify.Configuration config = new hub.top.uma.view.MineSimplify.Configuration();
+org.deckfour.xes.classification.XEventClassifier classifier = org.deckfour.xes.info.impl.XLogInfoImpl.STANDARD_CLASSIFIER;
+res2 = simplify_mined_model_using_uma(log, pnet, marking, config, classifier);
+
+pnet2 = res2[0];
+marking2 = res2[1];
+	
+print("   simplified net: " + pnet2);
+print("   marking of simplified net: " + marking2);
+
+junit.framework.Assert.assertNotNull("Simplified model is not null", pnet2);
+junit.framework.Assert.assertNotNull("Simplified model is not null", marking2);

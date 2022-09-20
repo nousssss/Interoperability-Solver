@@ -1,0 +1,199 @@
+package org.processmining.plugins.nouss;
+
+import java.text.NumberFormat;
+
+import javax.swing.JLabel;
+
+import org.deckfour.xes.classification.XEventClass;
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.extension.std.XConceptExtension;
+import org.deckfour.xes.info.XLogInfo;
+import org.deckfour.xes.info.XLogInfoFactory;
+import org.deckfour.xes.info.impl.XLogInfoImpl;
+import org.deckfour.xes.model.XLog;
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.framework.connections.ConnectionCannotBeObtained;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.models.connections.petrinets.EvClassLogPetrinetConnection;
+import org.processmining.models.connections.petrinets.PNRepResultAllRequiredParamConnection;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
+import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayAlgorithm;
+import org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter;
+import org.processmining.plugins.petrinet.replayresult.PNRepResult;
+
+import nl.tue.astar.AStarException;
+
+
+@Plugin
+(
+	name = "nouss does alignment", 
+	parameterLabels = {}, 
+	returnLabels = { "Petri net and log replay"}, 
+	returnTypes = { PNRepResult.class })
+ 
+
+
+public class Alignment {
+	
+	private static TransEvClassMapping constructMapping(PetrinetGraph net, XLog log,
+			XEventClass dummyEvClass, XEventClassifier eventClassifier) 
+  {
+		TransEvClassMapping mapping = new TransEvClassMapping(eventClassifier,dummyEvClass);
+		XLogInfo summary = XLogInfoFactory.createLogInfo(log, eventClassifier);
+		for (Transition t : net.getTransitions())
+		   {
+				boolean mapped = false;
+				for (XEventClass evClass : summary.getEventClasses().getClasses()) 
+				 {
+					String id = evClass.getId();
+					String label = t.getLabel();
+					id = id.substring(0, id.length()-1);
+					if (label.equals(id)) 
+					 {
+					   mapping.put(t, evClass);
+					   mapped = true;
+					   break;
+					 }
+				  }
+		   }
+		return mapping;
+   }
+			
+	@UITopiaVariant
+	  (
+	     affiliation = "CDTA", 
+	     author = "Ines bachiri", 
+	     email = "ji_bachiri@esi.dz"
+	  )
+	@PluginVariant 
+	  (
+		 variantLabel = "nouss does alignment", 
+		 requiredParameterLabels = { }
+	  )
+	
+	public static PNRepResult check(UIPluginContext context) throws Exception {
+		   //import the log 
+		XLog log = ImportLog.readLogFromFile();
+		System.out.println("I imported the xes");
+		   // import the petrinet
+		Object[] petri = ImportPetriNets.readPNFromFile();
+		Petrinet net = (Petrinet) petri[0];
+		Marking initialMarking = (Marking) petri[1];
+		System.out.println("I imported the pnml");
+		   // creating a dummy event class (for transitions with no corresponding stuff in map
+		XEventClass dummyEvClass = new XEventClass("DUMMY", 99999);
+		
+		XEventClassifier eventClassifier = XLogInfoImpl.STANDARD_CLASSIFIER;
+		   // map between the log and the petrinet
+		TransEvClassMapping mapping = constructMapping(net, log, dummyEvClass,eventClassifier); 
+		System.out.println("I did the mapping");
+		   // creating a connection to be stored
+		EvClassLogPetrinetConnection evClassLogPetrinetConnection = new
+		EvClassLogPetrinetConnection("", net, log, eventClassifier, mapping);
+		
+		return replayLogGUI(context,net,log,initialMarking,mapping) ;
+		   
+	}
+	
+	public static PNRepResult replayLogGUI(final UIPluginContext context, PetrinetGraph net, XLog log, Marking init, TransEvClassMapping mapping)
+			throws ConnectionCannotBeObtained, AStarException {
+		
+		if (net.getTransitions().isEmpty()) {
+			context.showConfiguration("Error", new JLabel("Cannot replay on a Petri net that does not contain transitions. Select Cancel or Continue to continue."));
+			context.getFutureResult(0).cancel(true);
+			return null;
+		}
+		
+		PNReplayerUI pnReplayerUI = new PNReplayerUI();
+		Object[] resultConfiguration = pnReplayerUI.getConfiguration(context, net,log,init,mapping);
+		
+		if (resultConfiguration == null) {
+			context.getFutureResult(0).cancel(true);
+			return null;
+		}
+
+		// if all parameters are set, replay log
+		if (resultConfiguration[PNReplayerUI.MAPPING] != null) {
+			context.log("replay is performed. All parameters are set.");
+
+			// This connection MUST exists, as it is constructed by the configuration if necessary
+			context.getConnectionManager().getFirstConnection(EvClassLogPetrinetConnection.class, context, net, log);
+
+			// get all parameters
+			IPNReplayAlgorithm selectedAlg = (IPNReplayAlgorithm) resultConfiguration[PNReplayerUI.ALGORITHM];
+			IPNReplayParameter algParameters = (IPNReplayParameter) resultConfiguration[PNReplayerUI.PARAMETERS];
+
+			// since based on GUI, create connection
+			algParameters.setCreateConn(true);
+			algParameters.setGUIMode(true);
+
+			PNRepResult res = replayLogPrivate(context, net, log, pnReplayerUI.getMapping(), selectedAlg, algParameters);
+
+			context.getFutureResult(0).setLabel(
+					"Replay result - log " + XConceptExtension.instance().extractName(log) + " on " + net.getLabel()
+							+ " using " + selectedAlg.toString());
+
+			return res;
+
+		} else {
+			context.log("replay is not performed because not enough parameter is submitted");
+			context.getFutureResult(0).cancel(true);
+			return null;
+		}
+	}
+		
+		private PNRepResult replayLogPrivate(PluginContext context, PetrinetGraph net, XLog log, TransEvClassMapping mapping,
+				IPNReplayAlgorithm selectedAlg, IPNReplayParameter parameters) throws AStarException {
+			if (selectedAlg.isAllReqSatisfied(context, net, log, mapping, parameters)) {
+				// for each trace, replay according to the algorithm. Only returns two objects
+				PNRepResult replayRes = null;
+
+				if (parameters.isGUIMode()) {
+					long start = System.nanoTime();
+
+					replayRes = selectedAlg.replayLog(context, net, log, mapping, parameters);
+
+					long period = System.nanoTime() - start;
+					NumberFormat nf = NumberFormat.getInstance();
+					nf.setMinimumFractionDigits(2);
+					nf.setMaximumFractionDigits(2);
+
+					context.log("Replay is finished in " + nf.format(period / 1000000000) + " seconds");
+				} else {
+					replayRes = selectedAlg.replayLog(context, net, log, mapping, parameters);
+				}
+
+				// add connection
+				if (replayRes != null) {
+					if (parameters.isCreatingConn()) {
+						createConnections(context, net, log, mapping, selectedAlg, parameters, replayRes);
+					}
+				}
+
+				return replayRes;
+			} else {
+				if (context != null) {
+					context.log("The provided parameters is not valid for the selected algorithm.");
+					context.getFutureResult(0).cancel(true);
+				}
+				return null;
+			}
+		}
+		
+		protected void createConnections(PluginContext context, PetrinetGraph net, XLog log, TransEvClassMapping mapping,
+				IPNReplayAlgorithm selectedAlg, IPNReplayParameter parameters, PNRepResult replayRes) {
+			context.addConnection(new PNRepResultAllRequiredParamConnection(
+					"Connection between replay result, " + XConceptExtension.instance().extractName(log)
+							+ ", and " + net.getLabel(), net, log, mapping, selectedAlg, parameters, replayRes));
+		}
+
+	}
+	
+	

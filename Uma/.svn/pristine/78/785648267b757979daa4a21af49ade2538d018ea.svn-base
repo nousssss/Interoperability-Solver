@@ -1,0 +1,34 @@
+print("TESTCASE: Align Log To Model.");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+//---------------------------------------------------
+print("1) Opening log file...");
+
+org.deckfour.xes.model.XLog log = open_xes_log_file(testFileRoot+"/pn_ex_01.xes");
+
+print(" id of the opened log: " + log);
+
+junit.framework.Assert.assertNotNull("Log is not null", log);
+
+//---------------------------------------------------
+print("2) Loading model...");
+
+res = import_petri_net_from_pnml_file(testFileRoot+"/pn_ex_01_alpha.pnml");
+
+pnet = res[0];
+marking = res[1];
+	
+print("   net: " + pnet);
+print("   marking: " + marking);
+
+junit.framework.Assert.assertNotNull("Petri net is not null", pnet);
+junit.framework.Assert.assertNotNull("Marking net is not null", marking);
+
+//---------------------------------------------------
+print("3) Aligning Log To Model...");
+
+// cannot run align log to model test, because replayer requires UI
+aligned = align_log_to_model(log, pnet);
+
+junit.framework.Assert.assertNotNull("Aligned log is not null", aligned);

@@ -1,5 +1,16 @@
 eclipse.preferences.version=1
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%AcceptingPetriNet/location=https\://svn.win.tue.nl/repos/prom/Packages/AcceptingPetriNet
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%Alignment/location=https\://svn.win.tue.nl/repos/prom/Packages/Alignment
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%AlignmentRepair/location=https\://svn.win.tue.nl/repos/prom/Packages/AlignmentRepair
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%BPConformance/location=https\://svn.win.tue.nl/repos/prom/Packages/BPConformance
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%CPNet%Trunk/location=https\://svn.win.tue.nl/repos/prom/Packages/CPNet/Trunk
 repositories/https%%%svn.win.tue.nl%repos%prom%Packages%ETConformance%Trunk/location=https\://svn.win.tue.nl/repos/prom/Packages/ETConformance/Trunk
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%LogAlignment/location=https\://svn.win.tue.nl/repos/prom/Packages/LogAlignment
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%ModelRepair/location=https\://svn.win.tue.nl/repos/prom/Packages/ModelRepair
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%PNetAlignmentAnalysis/location=https\://svn.win.tue.nl/repos/prom/Packages/PNetAlignmentAnalysis
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%PNetAlignmentXESConversion/location=https\://svn.win.tue.nl/repos/prom/Packages/PNetAlignmentXESConversion
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%PNetReplayer/location=https\://svn.win.tue.nl/repos/prom/Packages/PNetReplayer
 repositories/https%%%svn.win.tue.nl%repos%prom%Packages%PetriNets/location=https\://svn.win.tue.nl/repos/prom/Packages/PetriNets
 repositories/https%%%svn.win.tue.nl%repos%prom%Packages%StochasticLabelledPetriNets/location=https\://svn.win.tue.nl/repos/prom/Packages/StochasticLabelledPetriNets
+repositories/https%%%svn.win.tue.nl%repos%prom%Packages%Uma%Trunk/location=https\://svn.win.tue.nl/repos/prom/Packages/Uma/Trunk
 repositories/https%%%svn.win.tue.nl%repos%prom/location=https\://svn.win.tue.nl/repos/prom

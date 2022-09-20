@@ -1,0 +1,46 @@
+print("TESTCASE: Repair Model (Final Marking #2)");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+//---------------------------------------------------
+print("1) Reading net from file...");
+
+res = import_petri_net_from_pnml_file(testFileRoot+"/model_repair_bug_final_marking2.pnml");
+
+pnet = res[0];
+initial_marking = res[1];
+
+print("   net: " + pnet);
+print("   marking: " + initial_marking);
+
+org.junit.Assert.assertNotNull("Petri net is not null", pnet);
+org.junit.Assert.assertNotNull("Initial marking is not null", initial_marking);
+
+//---------------------------------------------------
+print("2) Constructing default final marking...");
+
+final_marking = test_repair_helper_build_final_marking(pnet);
+org.junit.Assert.assertNotNull("Initial marking is not null", final_marking);
+
+//---------------------------------------------------
+print("3) Opening log file...");
+
+// Use the name of the plugin (in lowercase) to open a log
+	
+org.deckfour.xes.model.XLog log = open_xes_log_file(testFileRoot+"/model_repair_bug_final_marking2.xes");
+
+print(" id of the opened log: " + log);
+
+org.junit.Assert.assertNotNull("Log is not null", log);
+
+//---------------------------------------------------
+print("4) Repairing Model...");
+
+config = new org.processmining.modelrepair.parameters.RepairConfiguration();
+res2 = repair_model(log, pnet, initial_marking, final_marking, config);
+print("result "+res2);
+
+org.junit.Assert.assertNotNull("Result is not null", res2);
+
+repaired_model = res2[0];
+org.junit.Assert.assertEquals("Resulting net has wrong size.", 8, repaired_model.getNodes().size());

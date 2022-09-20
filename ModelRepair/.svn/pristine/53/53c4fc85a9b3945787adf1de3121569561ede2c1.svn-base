@@ -1,0 +1,28 @@
+package.name=ModelRepair
+
+# name of build project
+test.projectname=${package.name}.test
+
+# compiler flags
+bytecode_format=1.7
+
+# location of plugin code, binaries, and test files (can be modified)
+home=${test.basedir}/..
+bin=${home}/bindist
+src=${home}/src
+
+# location of tests and test files
+dir.test-src=${test.basedir}/src-test
+dir.test-bin=${test.basedir}/bin-test
+dir.testfiles=${test.basedir}/testfiles
+
+# location of scripted tests
+dir.autoscripts=${dir.testfiles}/autoscripts
+# location of inclass method tests
+dir.inclassTests=${home}/dist/${package.name}.jar
+# default JUnit tests
+test.default=org/processmining/tests/**/*Test.java
+
+# location of test results (can be modified)
+dir.coveragereport.html=${test.basedir}/cover-html
+dir.coveragereport.xml=${test.basedir}/cover-xml

@@ -9,11 +9,8 @@
     <fullyQualifiedTypeName name="org.deckfour.xes.classification.XEventClassifier"/>
     <fullyQualifiedTypeName name="org.deckfour.xes.info.XLogInfo"/>
     <fullyQualifiedTypeName name="org.deckfour.xes.info.XLogInfoFactory"/>
-    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.Petrinet"/>
-    <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.Marking"/>
     <fullyQualifiedTypeName name="org.processmining.framework.plugin.annotations.Plugin"/>
     <fullyQualifiedTypeName name="org.processmining.contexts.uitopia.annotations.UITopiaVariant"/>
-    <fullyQualifiedTypeName name="org.processmining.contexts.uitopia.UIPluginContext"/>
     <fullyQualifiedTypeName name="org.deckfour.uitopia.api.event.TaskListener.InteractionResult"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.pnml.base.Pnml"/>
@@ -23,5 +20,22 @@
     <fullyQualifiedTypeName name="org.processmining.plugins.etconformance.ETCResults"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.etconformance.ETCSettings"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.etconformance.ETCPlugin"/>
+    <fullyQualifiedTypeName name="nl.tue.astar.AStarException"/>
     <fullyQualifiedTypeName name="org.processmining.framework.plugin.PluginContext"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.Petrinet"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="com.google.gwt.dev.util.collect.HashMap"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.petrinet.replayer.algorithms.IPNReplayParameter"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.petrinet.replayer.algorithms.costbasedcomplete.CostBasedCompleteParam"/>
+    <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.Marking"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.petrinet.replayer.algorithms.costbasedcomplete.CostBasedCompleteMarkEquationPrune"/>
+    <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.impl.PetrinetSemanticsFactory"/>
+    <fullyQualifiedTypeName name="org.processmining.models.semantics.petrinet.PetrinetSemantics"/>
+    <fullyQualifiedTypeName name="org.processmining.models.semantics.IllegalTransitionException"/>
+    <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.elements.Place"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.petrinet.replayresult.PNRepResult"/>
+    <fullyQualifiedTypeName name="org.processmining.modelrepair.plugins.align.PNLogReplayer"/>
+    <fullyQualifiedTypeName name="java.lang.System"/>
+    <fullyQualifiedTypeName name="org.processmining.contexts.uitopia.UIPluginContext"/>
 </qualifiedTypeNameHistroy>

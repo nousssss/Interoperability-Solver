@@ -1,0 +1,69 @@
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[twoside, textwidth=124mm, vmarginratio=2:3]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\renewcommand{\topfraction}{0.85}   %%% up to 85% of page may be figures
+\renewcommand{\textfraction}{0.1}   %%% down to 10% of page may be text
+\renewcommand{\floatpagefraction}{0.75}   %%% move figure to figure only page if figure is larger than 75% of the page
+
+%%% spacing between figures and text
+%\setlength{\belowcaptionskip}{6pt} % space below caption
+\setlength{\abovecaptionskip}{0pt} % space above caption
+
+%\setlength{\intextsep}{6pt}%
+%\setlength{\textfloatsep}{6pt}%
+
+%%% ------ fonts ------
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\changefont}[3]{\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont}
+
+\setkomafont{subject}{\raggedleft\sffamily\fontseries{cmss}\selectfont\Large}%
+\setkomafont{title}{\raggedleft\sffamily\fontseries{sbc}\selectfont\LARGE}%
+
+%\setkomafont{part}{\sffamily\fontseries{sbc}\selectfont\LARGE}%
+%\setkomafont{part}{\sffamily\fontseries{cmss}\fontsize{34}{36}\selectfont}%
+%\setkomafont{chapter}{\raggedleft\sffamily\fontseries{cmss}\fontsize{44}{46}\selectfont}%
+\setkomafont{section}{\sffamily\fontseries{sbc}\selectfont\Large} %
+\setkomafont{subsection}{\sffamily\fontseries{sbc}\selectfont\large} %
+\setkomafont{subsubsection}{\sffamily\fontseries{sbc}\selectfont} %
+\setkomafont{paragraph}{\sffamily\fontseries{sbc}\selectfont}
+
+\newcommand{\textsbc}[1]{{\sffamily\fontseries{sbc}\selectfont{#1}}}
+
+
+\newcommand{\titlesubject}{Subject}
+\newcommand{\titlename}{Name}
+\newcommand{\titlesubtitle}{subtitle}
+\newcommand{\titleauthor}{author(s)}
+\newcommand{\titleurl}{http://my.url.org/}
+\newcommand{\titlepurpose}{short description/abstract}
+
+\makeatletter
+\newcommand{\makenicetitle}{%
+\thispagestyle{empty}%
+%
+{\raggedleft\sffamily\fontseries{cmss}\selectfont\LARGE\selectfont %%%
+\titlesubject\par}\vspace{1cm}%
+%
+{\raggedleft\sffamily\fontseries{sbc}\selectfont\fontsize{34}{36}\selectfont %%%
+\titlename\par}%
+%
+{\raggedleft\sffamily\fontseries{sbc}\selectfont\Huge\selectfont %%%
+\titlesubtitle\par}\vspace{1cm}%
+%
+{\raggedleft\sffamily\fontseries{cmss}\selectfont\large\selectfont %%%
+\titleauthor\par}%
+%
+{\raggedleft\sffamily\fontseries{cmss}\selectfont\large\selectfont %%%
+\today\par}\vspace{.3cm}%
+%
+{\raggedleft\sffamily\fontseries{cmss}\selectfont\large\selectfont %%%
+\url{\titleurl}\par}\vfill%
+%
+{\noindent\titlepurpose}%
+\newpage}%
+\makeatother

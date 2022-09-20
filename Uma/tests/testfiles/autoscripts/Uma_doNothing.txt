@@ -1,0 +1,30 @@
+print("Calling Uma with invalid parameter mode");
+
+String testFileRoot = System.getProperty("test.testFileRoot", ".");
+
+//---------------------------------------------------
+print("1) Reding net from file...");
+
+res = import_petri_net_from_pnml_file(testFileRoot+"/grouped_a12f0n00_simp.pnml");
+
+pnet = res[0];
+marking = res[1];
+	
+print("   net: " + pnet);
+print("   marking: " + marking);
+
+junit.framework.Assert.assertNotNull("Petri net is not null", pnet);
+junit.framework.Assert.assertNotNull("Marking net is not null", marking);
+
+//---------------------------------------------------
+print("2) Starting Uma in mode -1...");
+
+config = org.processmining.plugins.uma.Uma_UnfoldPN.UnfoldingConfiguration.getDefault_unfolding();
+config.mode = -1;
+
+try {
+	res2 = analyze_model_using_uma(pnet, marking, config);
+	print("   result: " + res2);
+	junit.framework.Assert.assertTrue("Uma does not run in invalid mode.", false);
+} catch (java.util.concurrent.CancellationException e) {
+}

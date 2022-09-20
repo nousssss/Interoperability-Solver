@@ -1,0 +1,3 @@
+print("TESTCASE: Repair Model #2");
+result = test_repair_model2();
+org.junit.Assert.assertEquals("Repair succeeded", "success", result);

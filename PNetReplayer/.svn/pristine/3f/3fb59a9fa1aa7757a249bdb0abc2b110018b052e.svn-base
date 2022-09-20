@@ -1,0 +1,341 @@
+/**
+ * 
+ */
+package org.processmining.plugins.petrinet.replayer.matchinstances.algorithms.express;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.deckfour.xes.classification.XEventClass;
+import org.deckfour.xes.classification.XEventClasses;
+import org.deckfour.xes.info.XLogInfo;
+import org.deckfour.xes.info.XLogInfoFactory;
+import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.model.XTrace;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.models.graphbased.directed.petrinet.InhibitorNet;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
+import org.processmining.models.graphbased.directed.petrinet.ResetInhibitorNet;
+import org.processmining.models.graphbased.directed.petrinet.ResetNet;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+import org.processmining.models.semantics.petrinet.Marking;
+import org.processmining.plugins.astar.petrinet.impl.PHead;
+import org.processmining.plugins.astar.petrinet.impl.PILPDelegate;
+import org.processmining.plugins.astar.petrinet.impl.PILPTail;
+import org.processmining.plugins.astar.petrinet.impl.PRecord;
+import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
+import org.processmining.plugins.petrinet.replayresult.PNMatchInstancesRepResult;
+import org.processmining.plugins.petrinet.replayresult.StepTypes;
+import org.processmining.plugins.replayer.replayresult.AllSyncReplayResult;
+
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import nl.tue.astar.AStarException;
+import nl.tue.astar.AStarThread.Canceller;
+import nl.tue.astar.Trace;
+import nl.tue.astar.impl.memefficient.MemoryEfficientAStarAlgorithm;
+
+/**
+ * @author aadrians Mar 1, 2013
+ * 
+ */
+//@PNReplayMultipleAlignmentAlgorithm
+public class AllOptAlignmentsGraphILPAlg extends AbstractAllOptAlignmentsGraphAlg<PILPDelegate, PILPTail> {
+	public String toString() {
+		return "ILP graph-based state space replay to obtain representatives of optimal alignments";
+	}
+
+	public String getHTMLInfo() {
+		return "<html>Returns representatives of optimal alignments using graph-based state space and ILP to lead state exploration. <br/>"
+				+ "Assuming that the model does not allow loop/infinite firing sequences of cost 0." +
+						"Reordering of sync moves is not taken into account (hence not all optimal alignments may be obtained)</html>";
+	};
+
+	@SuppressWarnings("unchecked")
+	public PNMatchInstancesRepResult replayLog(final PluginContext context, PetrinetGraph net, Marking initMarking,
+			Marking finalMarking, final XLog log, final TransEvClassMapping mapping, Object[] parameters)
+			throws AStarException {
+		this.initMarking = initMarking;
+		this.finalMarkings = new Marking[] { finalMarking };
+
+		mapTrans2Cost = (Map<Transition, Integer>) parameters[MAPTRANSTOCOST];
+		mapEvClass2Cost = (Map<XEventClass, Integer>) parameters[MAPXEVENTCLASSTOCOST];
+		maxNumOfStates = (Integer) parameters[MAXEXPLOREDINSTANCES];
+
+		classifier = mapping.getEventClassifier();
+
+		if (context != null) {
+			if (maxNumOfStates != Integer.MAX_VALUE) {
+				context.log("Starting replay with max state " + maxNumOfStates + "...");
+			} else {
+				context.log("Starting replay with no limit for max explored state...");
+			}
+		}
+
+		final XLogInfo summary = XLogInfoFactory.createLogInfo(log, classifier);
+		final XEventClasses classes = summary.getEventClasses();
+
+		final int delta = 1000;
+
+		// for sake of compatibility, insert cost of dummy xevent class
+		mapEvClass2Cost.put(mapping.getDummyEventClass(), 0);
+
+		final PILPDelegate delegate = getDelegate(net, log, classes, mapping, mapTrans2Cost, mapEvClass2Cost, delta,
+				finalMarkings);
+
+		final MemoryEfficientAStarAlgorithm<PHead, PILPTail> aStar = new MemoryEfficientAStarAlgorithm<PHead, PILPTail>(
+				delegate);
+
+		ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+		final List<Future<MatchInstancesGraphRes>> result = new ArrayList<Future<MatchInstancesGraphRes>>();
+
+		final TIntIntMap doneMap = new TIntIntHashMap();
+
+		long start = System.currentTimeMillis();
+
+		if (context != null) {
+			context.getProgress().setMaximum(log.size() + 1);
+		}
+
+		TObjectIntMap<Trace> traces = new TObjectIntHashMap<Trace>(log.size() / 2, 0.5f, -1);
+
+		final List<AllSyncReplayResult> col = new ArrayList<AllSyncReplayResult>();
+
+		for (int i = 0; i < log.size(); i++) {
+			if (context != null) {
+				if (context.getProgress().isCancelled()) {
+					break;
+				}
+			}
+			PHead initial = new PHead(delegate, initMarking, log.get(i));
+			//TODO: ALlow for partially ordered traces
+			final Trace trace = getLinearTrace(log, i, delegate);
+			int first = traces.get(trace);
+			if (first >= 0) {
+				doneMap.put(i, first);
+				continue;
+			} else {
+				traces.put(trace, i);
+			}
+			final AllOptAlignmentsGraphThread<PHead, PILPTail> thread = getThread(aStar, initial, trace, maxNumOfStates);
+			//			final MemoryEfficientAStarTreeStateSpaceThread<PHead, PILPTail> thread = new MemoryEfficientAStarTreeStateSpaceThread<PHead, PILPTail>(
+			//					aStar, initial, trace, maxNumOfStates);
+			// To output dot files for each graph, use:
+			//------------------
+			//			String traceID = XConceptExtension.instance().extractName(log.get(i));
+			//			if (traceID == null || traceID.isEmpty()) {
+			//				traceID = "" + i;
+			//			}
+			//			thread.addObserver(new DotGraphAStarObserver(new java.io.File("D:/temp/trace_" + traceID + "_graph.txt")));
+			//			thread.addObserver(new DotSpanningTreeObserver(new java.io.File("D:/temp/trace_" + traceID + "_sptree.txt")));
+			//------------------
+			// To use a fast implementation rather than a memory-efficient,use:
+			//				TObjectIntMap<PHead> head2int = new TObjectIntHashMap<PHead>(10000);
+			//				List<State<PHead, T>> stateList = new ArrayList<State<PHead, T>>(10000);
+			//				thread = new FastAStarThread<PHead, T>(delegate,
+			//			
+
+			final int j = i;
+			result.add(pool.submit(new Callable<MatchInstancesGraphRes>() {
+
+				public MatchInstancesGraphRes call() throws Exception {
+					MatchInstancesGraphRes result = new MatchInstancesGraphRes();
+					result.trace = j;
+					result.filteredTrace = trace;
+
+					Canceller c = new Canceller() {
+						public boolean isCancelled() {
+							if (context != null) {
+								return context.getProgress().isCancelled();
+							}
+							return false;
+						}
+					};
+
+					long start = System.nanoTime();
+					PRecord record = (PRecord) thread.getOptimalRecord(c);
+					result.reliable = thread.wasReliable();
+					result.addRecord(record);
+
+					// int threshold = (int) (computeThresholdCost(record, delegate, trace) + delegate.getDelta() - 1);
+					int threshold = record.getCostSoFar();
+					if (result.reliable) {
+						record = (PRecord) thread.getOptimalRecord(c, threshold,-1.0);
+						while (thread.wasReliable()) {
+							result.addRecord(record);
+							record = (PRecord) thread.getOptimalRecord(c, threshold,-1.0);
+						}
+						result.mapRecordToSameSuffix = thread.getMapToStatesWSameSuffix();
+						result.reliable = thread.getVisitedStateCount() < maxNumOfStates;
+					}
+
+					long end = System.nanoTime();
+
+					// uncomment if the observers are used
+					// thread.closeObservers();
+
+					if (context != null) {
+						synchronized (context) {
+							if ((context != null) && (j % 100 == 0)) {
+								context.log(j + "/" + log.size() + " queueing " + thread.getQueuedStateCount()
+										+ " states, visiting " + thread.getVisitedStateCount() + " states took "
+										+ (end - start) / 1000000000.0 + " seconds.");
+							}
+							context.getProgress().inc();
+						}
+					}
+					visitedStates += thread.getVisitedStateCount();
+					traversedArcs += thread.getTraversedArcCount();
+					queuedStates += thread.getQueuedStateCount();
+
+					result.queuedStates = thread.getQueuedStateCount();
+					result.states = thread.getVisitedStateCount();
+					result.milliseconds = (long) ((end - start) / 1000000.0);
+
+					return result;
+
+				}
+			}));
+		}
+		if (context != null) {
+			context.getProgress().inc();
+		}
+		pool.shutdown();
+		while (!pool.isTerminated()) {
+			try {
+				pool.awaitTermination(10, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		long maxStateCount = 0;
+		long time = 0;
+		long ui = System.currentTimeMillis();
+		for (Future<MatchInstancesGraphRes> f : result) {
+			MatchInstancesGraphRes r = null;
+			try {
+				while (r == null) {
+					try {
+						r = f.get();
+					} catch (InterruptedException e) {
+					}
+				}
+				XTrace trace = log.get(r.trace);
+				int states = addReplayResults(delegate, trace, r, doneMap, log, col, r.trace, null,
+						new LinkedList<Object>(), new LinkedList<StepTypes>());
+				maxStateCount = Math.max(maxStateCount, states);
+				time += r.milliseconds;
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		long end = System.currentTimeMillis();
+		// each PRecord uses 56 bytes in memory
+
+		maxStateCount *= 56;
+		if (context != null) {
+			context.log("Total time : " + (end - start) / 1000.0 + " seconds");
+			context.log("Time for Best First Search: " + time / 1000.0 + " seconds");
+			context.log("In total " + visitedStates + " unique states were visisted.");
+			context.log("In total " + traversedArcs + " arcs were traversed.");
+			context.log("In total " + queuedStates + " states were queued.");
+			context.log("In total " + aStar.getStatespace().size()
+					+ " marking-parikhvector pairs were stored in the statespace.");
+			context.log("In total " + aStar.getStatespace().getMemory() / (1024.0 * 1024.0)
+					+ " MB were needed for the statespace.");
+			context.log("At most " + maxStateCount / (1024.0 * 1024.0) + " MB was needed for a trace (overestimate).");
+			context.log("States / second:  " + visitedStates / (time / 1000.0));
+			context.log("Traversed arcs / second:  " + traversedArcs / (time / 1000.0));
+			context.log("Queued states / second:  " + queuedStates / (time / 1000.0));
+			context.log("Storage / second: " + aStar.getStatespace().size() / ((ui - start) / 1000.0));
+		}
+		synchronized (col) {
+			PNMatchInstancesRepResult res = new PNMatchInstancesRepResult(col);
+			return res;
+		}
+	}
+
+	/**
+	 * Get the "real" threshold cost of optimal alignment (after multiplied by
+	 * delta)
+	 * 
+	 * @param r
+	 * @param d
+	 * @param filteredTrace
+	 * @return
+	 */
+	//	protected int computeThresholdCost(PRecord r, PILPDelegate d, Trace filteredTrace){
+	//		int cost = 0;
+	//		List<PRecord> history = PRecord.getHistory(r); // this is only a single history
+	//		for (PRecord rec : history) {
+	//			if (rec.getMovedEvent() == AStarThread.NOMOVE) {
+	//				// move model only
+	//				cost += (d.getCostForMoveModel((short) rec.getModelMove()) - d.getEpsilon());
+	//			} else {
+	//				// a move occurred in the log. Check if class aligns with class in trace
+	//				short a = (short) filteredTrace.get(rec.getMovedEvent());
+	//				if (rec.getModelMove() == AStarThread.NOMOVE) {
+	//					// move log only
+	//					cost += (d.getCostForMoveLog(a) - d.getEpsilon());
+	//				} else {
+	//					// sync move
+	//					cost += (d.getCostForMoveSync((short) rec.getModelMove()) - d.getEpsilon());
+	//				}
+	//			}
+	//		}
+	//		return cost;
+	//	}
+
+	/**
+	 * Override this method to change the thread used to compute optimal
+	 * alignments
+	 * 
+	 * @param aStar
+	 * @param initial
+	 * @param trace
+	 * @param maxNumOfStates
+	 * @return
+	 * @throws AStarException 
+	 */
+	protected AllOptAlignmentsGraphThread<PHead, PILPTail> getThread(
+			MemoryEfficientAStarAlgorithm<PHead, PILPTail> aStar, PHead initial, Trace trace, int maxNumOfStates) throws AStarException {
+		return new AllOptAlignmentsGraphThread.MemoryEfficient<PHead, PILPTail>(aStar, initial, trace, maxNumOfStates);
+	}
+
+	protected PILPDelegate getDelegate(PetrinetGraph net, XLog log, XEventClasses classes, TransEvClassMapping map,
+			Map<Transition, Integer> mapTrans2Cost, Map<XEventClass, Integer> mapEvClass2Cost, int delta,
+			Marking[] finalMarkings) {
+		PILPDelegate d = null;
+		if (net instanceof ResetInhibitorNet) {
+			d = new PILPDelegate((ResetInhibitorNet) net, log, classes, map, mapTrans2Cost, mapEvClass2Cost, delta,
+					threads, finalMarkings);
+
+		} else if (net instanceof ResetNet) {
+			d = new PILPDelegate((ResetNet) net, log, classes, map, mapTrans2Cost, mapEvClass2Cost, delta,
+					threads, finalMarkings);
+		} else if (net instanceof InhibitorNet) {
+			d = new PILPDelegate((InhibitorNet) net, log, classes, map, mapTrans2Cost, mapEvClass2Cost,
+					delta, threads, finalMarkings);
+		} else if (net instanceof Petrinet) {
+			d = new PILPDelegate((Petrinet) net, log, classes, map, mapTrans2Cost, mapEvClass2Cost, delta,
+					threads, finalMarkings);
+		}
+		if (d != null) {
+			d.setEpsilon(0);
+		}
+		return d;
+	}
+}
