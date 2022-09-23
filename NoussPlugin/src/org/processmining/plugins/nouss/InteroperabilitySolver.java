@@ -1,31 +1,34 @@
 package org.processmining.plugins.nouss;
 
-import org.apache.tools.ant.types.resources.First;
 import org.deckfour.xes.model.XLog;
-import org.jfree.data.time.Second;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.modelrepair.plugins.align.Uma_AlignForGlobalRepair_Plugin;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 
 @Plugin
       (
 		name = "Interoperability Solver", 
-		parameterLabels = { "Event Log", "Process Model"}, 
+		parameterLabels = {"Petri net", "Event Log", "Mapping", "Replay Algorithm", "Parameters" },
         returnLabels = { "Replay results" }, 
-        returnTypes = { PNRepResult.class }
+        returnTypes = { PNRepResult.class },
+        userAccessible = true
 	   )
 
 public class InteroperabilitySolver {
 	
 	private PNRepResult interoperabilitySolver(PluginContext context, PetrinetGraph net, XLog log) {
 	    //TODO: The body of your plug-in.
+		
 		return null;
 	}
 	
+	// Variant 1 : the log and the petrinet are provided
 	@UITopiaVariant
 	  (
 	     affiliation = "CDTA", 
@@ -34,13 +37,16 @@ public class InteroperabilitySolver {
 	  )
 	@PluginVariant 
 	  (
-		 variantLabel = "Your plug-in name, parameters", 
-		 requiredParameterLabels = { 0, 1}
+		 variantLabel = "Interoperability Solver, parameters", 
+		 requiredParameterLabels = {0, 1}
 	  )
-	public String yourConfiguredPlugin(PluginContext context, String input1,  String input2, String config) {
-	    return null;
+	public PNRepResult solverParam(UIPluginContext context, Petrinet net, XLog log ) {
+		Uma_AlignForGlobalRepair_Plugin alignPlugin = new Uma_AlignForGlobalRepair_Plugin();
+		PNRepResult res = alignPlugin.getGlobalAlignment(context, log, net);
+		return res;
 	}
 	
+	// Variant 2 : importing the log and the petrinet from files
 	@UITopiaVariant
 	  (
 		  affiliation = "CDTA", 
@@ -49,16 +55,37 @@ public class InteroperabilitySolver {
 	  )
 	@PluginVariant
 	  (
-		 variantLabel = "Your plug-in name, dialog", 
+		 variantLabel = "Interoperability Solver, dialog", 
 		 requiredParameterLabels = {}
 	  )
-	public String yourDefaultPlugin(UIPluginContext context, First input1, Second input2) throws Exception {
-		 //import the log 
+	public PNRepResult solverDialog(UIPluginContext context) throws Exception {
+		/* //import the log 
 		XLog log = ImportLog.readLogFromFile();
-		   // import the petrinet
-		Object[] petri = ImportPetriNets.readPNFromFile();
+		System.out.println("I imported the xes");
 		
-	    return null;
+		 // import the petrinet
+		Object[] petri = ImportPetriNets.readPNFromFile();
+		Petrinet net = (Petrinet) petri[0];
+		Marking initialMarking = (Marking) petri[1];
+		System.out.println("I imported the pnml");
+		
+		   // creating a dummy event class (for transitions with no corresponding stuff in map
+		XEventClass dummyEvClass = new XEventClass("DUMMY", 99999);
+		
+		XEventClassifier eventClassifier = XLogInfoImpl.STANDARD_CLASSIFIER;
+		
+		   // map between the log and the petrinet
+		TransEvClassMapping mapping = Alignment.constructMapping(net, log, dummyEvClass,eventClassifier); 
+		System.out.println("I did the mapping");
+		
+		   // creating a connection to be stored
+		EvClassLogPetrinetConnection evClassLogPetrinetConnection = new
+		EvClassLogPetrinetConnection("", net, log, eventClassifier, mapping);
+		
+		  // Do the replay
+		return Alignment.replayLogGUI(context,net,log,initialMarking,mapping) ; */
+		return Alignment.check(context);
+	    
 	}
 
 

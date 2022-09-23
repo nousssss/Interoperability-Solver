@@ -1,6 +1,0 @@
-package org.processmining.plugins.nouss;
-
-
-public interface LabelledPetrinet {
-
-}

@@ -1,5 +1,0 @@
-package org.processmining.plugins.nouss;
-
-public class LabelledPetrinet extends Pe {
-
-}

@@ -39,4 +39,6 @@
     <fullyQualifiedTypeName name="javax.swing.JButton"/>
     <fullyQualifiedTypeName name="org.processmining.plugins.petrinet.replayresult.PNRepResult"/>
     <fullyQualifiedTypeName name="org.processmining.models.graphbased.directed.petrinet.PetrinetGraph"/>
+    <fullyQualifiedTypeName name="org.processmining.plugins.nouss.Alignment"/>
+    <fullyQualifiedTypeName name="org.processmining.modelrepair.plugins.align.Uma_AlignForGlobalRepair_Plugin"/>
 </qualifiedTypeNameHistroy>
