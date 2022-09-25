@@ -1,0 +1,93 @@
+package org.processmining.plugins.interoperability;
+
+
+import org.deckfour.xes.model.XLog;
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.framework.plugin.PluginContext;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.modelrepair.plugins.align.Uma_AlignForGlobalRepair_Plugin;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
+import org.processmining.plugins.petrinet.replayresult.PNRepResult;
+
+@Plugin
+      (
+		name = "Interoperability Solver", 
+		parameterLabels = {"Petri net", "Event Log", "Mapping", "Replay Algorithm", "Parameters" },
+        returnLabels = { "Replay results" }, 
+        returnTypes = { PNRepResult.class },
+        userAccessible = true
+	   )
+
+public class InteroperabilitySolver {
+	
+	private PNRepResult interoperabilitySolver(PluginContext context, PetrinetGraph net, XLog log) {
+	    //TODO: The body of your plug-in.
+		
+		return null;
+	}
+	
+	// Variant 1 : the log and the petrinet are provided
+	@UITopiaVariant
+	  (
+	     affiliation = "CDTA", 
+	     author = "Bachiri Inas", 
+	     email = "ji_bachiri@esi.dz"
+	  )
+	@PluginVariant 
+	  (
+		 variantLabel = "Interoperability Solver, parameters", 
+		 requiredParameterLabels = {0, 1}
+	  )
+	public PNRepResult solverParam(UIPluginContext context, Petrinet net, XLog log ) {
+		Uma_AlignForGlobalRepair_Plugin alignPlugin = new Uma_AlignForGlobalRepair_Plugin();
+		PNRepResult res = alignPlugin.getGlobalAlignment(context, log, net);
+		return res;
+	}
+	
+	// Variant 2 : importing the log and the petrinet from files
+	@UITopiaVariant
+	  (
+		  affiliation = "CDTA", 
+		  author = "Bachiri Inas", 
+		  email = "ji_bachiri@esi.dz"
+	  )
+	@PluginVariant
+	  (
+		 variantLabel = "Interoperability Solver, dialog", 
+		 requiredParameterLabels = {}
+	  )
+	public PNRepResult solverDialog(UIPluginContext context) throws Exception {
+		/* //import the log 
+		XLog log = ImportLog.readLogFromFile();
+		System.out.println("I imported the xes");
+		
+		 // import the petrinet
+		Object[] petri = ImportPetriNets.readPNFromFile();
+		Petrinet net = (Petrinet) petri[0];
+		Marking initialMarking = (Marking) petri[1];
+		System.out.println("I imported the pnml");
+		
+		   // creating a dummy event class (for transitions with no corresponding stuff in map
+		XEventClass dummyEvClass = new XEventClass("DUMMY", 99999);
+		
+		XEventClassifier eventClassifier = XLogInfoImpl.STANDARD_CLASSIFIER;
+		
+		   // map between the log and the petrinet
+		TransEvClassMapping mapping = Alignment.constructMapping(net, log, dummyEvClass,eventClassifier); 
+		System.out.println("I did the mapping");
+		
+		   // creating a connection to be stored
+		EvClassLogPetrinetConnection evClassLogPetrinetConnection = new
+		EvClassLogPetrinetConnection("", net, log, eventClassifier, mapping);
+		
+		  // Do the replay
+		return Alignment.replayLogGUI(context,net,log,initialMarking,mapping) ; */
+		return Alignment.check(context);
+	    
+	}
+
+
+}
