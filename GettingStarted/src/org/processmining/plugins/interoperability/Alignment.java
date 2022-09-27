@@ -6,24 +6,11 @@ import org.deckfour.xes.info.XLogInfo;
 import org.deckfour.xes.info.XLogInfoFactory;
 import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
-import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
-import org.processmining.framework.plugin.annotations.Plugin;
-import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.modelrepair.plugins.align.Uma_AlignForGlobalRepair_Plugin;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
-
-
-@Plugin
-(
-	name = "Interoperability Solver", 
-	parameterLabels = { },
-    returnLabels = { "Replay results" }, 
-    returnTypes = { PNRepResult.class },
-    userAccessible = true
- )
 
 public class Alignment {
 	
@@ -50,27 +37,8 @@ public class Alignment {
 		   }
 		return mapping;
    }
-	@UITopiaVariant
-	  (
-	     affiliation = "CDTA", 
-	     author = "Bachiri Inas", 
-	     email = "ji_bachiri@esi.dz"
-	  )
-	@PluginVariant 
-	  (
-		 variantLabel = "Interoperability Solver", 
-		 requiredParameterLabels = {}
-	  )
 	
-	public static PNRepResult check(UIPluginContext context) throws Exception {
-		//import the log 
-		    XLog log = ImportLog.readLogFromFile();
-			System.out.println("I imported the xes");
-				
-		// import the petrinet
-			Object[] petri = ImportPetriNets.readPNFromFile(context);
-			PetrinetGraph net = (PetrinetGraph) petri[0];
-			//Marking initialMarking = (Marking) petri[1];
+	public static PNRepResult check(UIPluginContext context,XLog log, PetrinetGraph net) throws Exception {
 				
 		Uma_AlignForGlobalRepair_Plugin alignPlugin = new Uma_AlignForGlobalRepair_Plugin();
 		return alignPlugin.getGlobalAlignment(context, log, net);

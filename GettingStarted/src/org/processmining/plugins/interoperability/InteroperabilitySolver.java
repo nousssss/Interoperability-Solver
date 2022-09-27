@@ -8,11 +8,11 @@ import org.deckfour.xes.model.XLog;
 import org.processmining.contexts.uitopia.UIPluginContext;
 import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.connections.ConnectionCannotBeObtained;
-import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
 import org.processmining.plugins.interoperability.models.LabelledPetrinet;
+import org.processmining.plugins.petrinet.replayresult.PNRepResult;
 
 /**
  * Interoperability solving plug-in that annotates and repaires a process model after
@@ -42,6 +42,7 @@ public class InteroperabilitySolver {
 	 * @param net
 	 *            The given process model.
 	 * @return an annotated repaired model.
+	 * @throws Exception 
 	 *            
 	 */
 	@UITopiaVariant
@@ -55,7 +56,7 @@ public class InteroperabilitySolver {
 	        variantLabel = "Interoperability Solver, given args", 
 	        requiredParameterLabels = { 0,1 }
 	       )
-	public LabelledPetrinet solveGiven(PluginContext context, Petrinet net, XLog log) {
+	public LabelledPetrinet solveGiven(UIPluginContext context, Petrinet net, XLog log) throws Exception {
 		Collection<InteroperabilitySolverConnection> connections;
 		try {
 			connections = context.getConnectionManager().getConnections(InteroperabilitySolverConnection.class, context, log);
@@ -78,6 +79,7 @@ public class InteroperabilitySolver {
 	 * @param context
 	 *            The given plug-in context.
 	 * @return an annotated repaired model.           
+	 * @throws Exception 
 	 */
 	@UITopiaVariant
 	     (
@@ -90,7 +92,7 @@ public class InteroperabilitySolver {
 	        variantLabel = "Interoperability Solver, imported args", 
 	        requiredParameterLabels = {}
 	       )
-	public LabelledPetrinet solveImported(UIPluginContext context) {
+	public LabelledPetrinet solveImported(UIPluginContext context) throws Exception {
 		XLog log = null;
 		Petrinet net = null;
 		SolverDialog dialog = new SolverDialog(log, net);
@@ -104,10 +106,23 @@ public class InteroperabilitySolver {
 	/*
 	 * The actual work.
 	 */
-	private LabelledPetrinet solver(PluginContext context,Petrinet net, XLog log) {
-		return null;
+	
+	private LabelledPetrinet solver(UIPluginContext context,Petrinet net, XLog log) throws Exception {
+		   
+		    // Alignement
+	    PNRepResult aligned = Alignment.check(context, log, net);
+	    
+	        // Repair
+	    Petrinet repairedNet = Repair.repair(context, log, net, aligned);
+	    
+	        // Annotation
+	    LabelledPetrinet result = Annotation.annotate(context, repairedNet, log);
+	    
+		return result;
 	}
 }
+
+
 
 /* //import the log 
 XLog log = ImportLog.readLogFromFile();

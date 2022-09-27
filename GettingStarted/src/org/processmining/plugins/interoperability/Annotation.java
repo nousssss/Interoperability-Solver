@@ -22,7 +22,7 @@ import org.processmining.plugins.interoperability.models.LabelledTransition;
     userAccessible = true
  )
 
-public class AnnotationPlugin {
+public class Annotation {
 	
 	@UITopiaVariant
 	  (
