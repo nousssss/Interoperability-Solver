@@ -14,5 +14,7 @@ import org.processmining.framework.annotations.Icon;
 
 public interface LabelledPetrinet extends LabelledPetrinetGraph {
 
+	LabelledPetrinetImpl getEmptyClone();
+
 	
 }

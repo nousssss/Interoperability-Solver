@@ -30,11 +30,11 @@ public class AnnotationPlugin {
 	@PluginVariant 
 	  (
 		 variantLabel = "Annotation Plugin", 
-		 requiredParameterLabels = {0}
+		 requiredParameterLabels = {0,1}
 	  )
 	
 	public static LabelledPetrinet annotate(UIPluginContext context,Petrinet net, XLog log) {
-		LabelledPetrinet labeledNet = (LabelledPetrinet) net;
+		LabelledPetrinet labeledNet = LabelledPetrinetFactory.clonePetrinet(net);
 
 		for (LabelledTransition trans : labeledNet.getTransitions()) {
 			for (XTrace trace : log) 
