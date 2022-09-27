@@ -1,4 +1,4 @@
-package org.processmining.plugins.interoperability;
+package org.processmining.plugins.interoperability.models;
 
 import org.processmining.models.graphbased.LocalNodeID;
 import org.processmining.models.graphbased.directed.AbstractDirectedGraph;

@@ -1,4 +1,4 @@
-package org.processmining.plugins.interoperability;
+package org.processmining.plugins.interoperability.models;
 
 
 import java.util.Collection;
@@ -22,8 +22,6 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Expandable
 import org.processmining.models.graphbased.directed.petrinet.elements.InhibitorArc;
 import org.processmining.models.graphbased.directed.petrinet.elements.Place;
 import org.processmining.models.graphbased.directed.petrinet.elements.ResetArc;
-import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
-import org.processmining.models.graphbased.directed.petrinet.impl.AbstractResetInhibitorNet;
 
 // This abstract class implements Petrinet, Resetnet, InhibitorNet, but
 // does not declare that. Declaration is done in subclasses, so the
@@ -32,8 +30,7 @@ import org.processmining.models.graphbased.directed.petrinet.impl.AbstractResetI
 
 // All implementing classes should decide which interfaces to implement.
 
-public abstract class LabelledAbstractResetInhibitorNet extends
-		AbstractDirectedGraph<PetrinetNode, PetrinetEdge<? extends PetrinetNode, ? extends PetrinetNode>> {
+public abstract class LabelledAbstractResetInhibitorNet extends AbstractDirectedGraph<PetrinetNode, PetrinetEdge<? extends PetrinetNode, ? extends PetrinetNode>>{
 
 	protected final Set<LabelledTransition> transitions;
 	protected final Set<ExpandableSubNet> substitutionTransitions;
@@ -376,25 +373,25 @@ public abstract class LabelledAbstractResetInhibitorNet extends
 	// It's safe to assume that the input is an AbstractResetInhibitorNet.
 	protected synchronized Map<DirectedGraphElement, DirectedGraphElement> cloneFrom(
 			DirectedGraph<PetrinetNode, PetrinetEdge<? extends PetrinetNode, ? extends PetrinetNode>> graph) {
-		AbstractResetInhibitorNet net = (AbstractResetInhibitorNet) graph;
+		LabelledAbstractResetInhibitorNet net = (LabelledAbstractResetInhibitorNet) graph;
 		return cloneFrom(net, true, true, true, true, true);
 	}
 
 	// It's safe to assume that the input is an AbstractResetInhibitorNet.
-	protected synchronized Map<DirectedGraphElement, DirectedGraphElement> cloneFrom(AbstractResetInhibitorNet net,
+	protected synchronized Map<DirectedGraphElement, DirectedGraphElement> cloneFrom(LabelledAbstractResetInhibitorNet net,
 			boolean transitions, boolean places, boolean arcs, boolean resets, boolean inhibitors) {
 
 		HashMap<DirectedGraphElement, DirectedGraphElement> mapping = new HashMap<DirectedGraphElement, DirectedGraphElement>();
 
 		if (transitions) {
-			for (Transition t : net.getTransitions()) {
-				Transition copy = addTransition(t.getLabel());
+			for (LabelledTransition t : net.transitions) {
+				LabelledTransition copy = addTransition(t.getLabel());
 				copy.setInvisible(t.isInvisible());
 				mapping.put(t, copy);
 			}
 		}
 		if (places) {
-			for (Place p : net.getPlaces()) {
+			for (Place p : net.places) {
 				Place copy = addPlace(p.getLabel());
 				mapping.put(p, copy);
 			}
@@ -406,7 +403,7 @@ public abstract class LabelledAbstractResetInhibitorNet extends
 			}
 		}
 		if (inhibitors) {
-			for (InhibitorArc a : net.getInhibitorArcs) {
+			for (InhibitorArc a : net.inhibitorArcs) {
 				mapping.put(a, addInhibitorArc((Place) mapping.get(a.getSource()), (LabelledTransition) mapping.get(a
 						.getTarget()), a.getLabel()));
 			}
@@ -426,6 +423,7 @@ public abstract class LabelledAbstractResetInhibitorNet extends
 
 		return mapping;
 	}
+
 
 	public synchronized Collection<Place> getPlaces() {
 		return Collections.unmodifiableCollection(places);

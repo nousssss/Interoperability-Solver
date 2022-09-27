@@ -1,4 +1,4 @@
-package org.processmining.plugins.interoperability;
+package org.processmining.plugins.interoperability.models;
 
 
 import org.processmining.framework.annotations.AuthoredType;

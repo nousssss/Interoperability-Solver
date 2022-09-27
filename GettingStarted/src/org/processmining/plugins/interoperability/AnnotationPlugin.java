@@ -8,6 +8,9 @@ import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+import org.processmining.plugins.interoperability.models.LabelledPetrinet;
+import org.processmining.plugins.interoperability.models.LabelledPetrinetFactory;
+import org.processmining.plugins.interoperability.models.LabelledTransition;
 
 
 @Plugin

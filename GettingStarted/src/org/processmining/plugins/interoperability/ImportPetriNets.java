@@ -31,7 +31,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public class ImportPetriNets {
 	
-    private static String  pnml_URI= null;  //the path to the PNML file
+    //private static String  pnml_URI= null;  //the path to the PNML file
 	
  // Imports a PNML file (gets the path to the file)
     private static String importPnmlFile() {
@@ -55,7 +55,7 @@ public class ImportPetriNets {
 		 	 {
 		 	       // get the path to the file
 			  	String path= fc.getSelectedFile().getAbsolutePath();
-			  	pnml_URI = path;
+			  	//pnml_URI = path;
 			  	return path;
 		     }
 		 }

@@ -16,7 +16,7 @@ import org.deckfour.xes.model.XLog;
 
 
 public class ImportLog {
-	private static String  xes_URI= null;  //the path to the XES file
+	//private static String  xes_URI= null;  //the path to the XES file
 	
 // Imports an XES file (gets the path to the file)
     private static String importXesFile() {	
@@ -40,7 +40,7 @@ public class ImportLog {
 		 	 {
 		 	       // get the path to the file
 			  	String path= fc.getSelectedFile().getAbsolutePath();
-			  	xes_URI = path;
+			 // 	xes_URI = path;
 			  	return path;
 		      }
 		}

@@ -7,6 +7,7 @@ import org.processmining.contexts.uitopia.annotations.Visualizer;
 import org.processmining.framework.plugin.PluginContext;
 import org.processmining.framework.plugin.annotations.Plugin;
 import org.processmining.models.jgraph.ProMJGraphVisualizer;
+import org.processmining.plugins.interoperability.models.LabelledPetrinetGraph;
 
 
 public class LabelledPetrinetVis {

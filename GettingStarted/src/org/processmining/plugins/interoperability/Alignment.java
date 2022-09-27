@@ -12,17 +12,17 @@ import org.processmining.framework.plugin.annotations.PluginVariant;
 import org.processmining.modelrepair.plugins.align.Uma_AlignForGlobalRepair_Plugin;
 import org.processmining.models.graphbased.directed.petrinet.PetrinetGraph;
 import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
-import org.processmining.models.semantics.petrinet.Marking;
 import org.processmining.plugins.connectionfactories.logpetrinet.TransEvClassMapping;
 import org.processmining.plugins.petrinet.replayresult.PNRepResult;
+
 
 @Plugin
 (
 	name = "Interoperability Solver", 
 	parameterLabels = { },
-  returnLabels = { "Replay results" }, 
-  returnTypes = { PNRepResult.class },
-  userAccessible = true
+    returnLabels = { "Replay results" }, 
+    returnTypes = { PNRepResult.class },
+    userAccessible = true
  )
 
 public class Alignment {
@@ -70,11 +70,10 @@ public class Alignment {
 		// import the petrinet
 			Object[] petri = ImportPetriNets.readPNFromFile(context);
 			PetrinetGraph net = (PetrinetGraph) petri[0];
-			Marking initialMarking = (Marking) petri[1];
+			//Marking initialMarking = (Marking) petri[1];
 				
 		Uma_AlignForGlobalRepair_Plugin alignPlugin = new Uma_AlignForGlobalRepair_Plugin();
 		return alignPlugin.getGlobalAlignment(context, log, net);
-		//return res;
 		
 	}
 
