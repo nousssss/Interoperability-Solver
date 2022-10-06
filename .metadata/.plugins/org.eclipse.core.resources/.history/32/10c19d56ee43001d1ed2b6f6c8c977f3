@@ -1,0 +1,41 @@
+package org.processmining.plugins.interoperability;
+
+import org.deckfour.uitopia.api.event.TaskListener.InteractionResult;
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
+
+@Plugin
+(
+	name = "Dialog test", 
+	parameterLabels = {},
+    returnLabels = {"sth"}, 
+    returnTypes = {Object.class},
+    userAccessible = true
+ )
+
+public class Test {
+	
+	@UITopiaVariant
+	  (
+	     affiliation = "CDTA", 
+	     author = "Bachiri Inas", 
+	     email = "ji_bachiri@esi.dz"
+	  )
+	@PluginVariant 
+	  (
+		 variantLabel = "Test dialog", 
+		 requiredParameterLabels = {}
+	  )
+	
+	public static Object dialog(UIPluginContext context) {
+		SolverDialog dialog = new SolverDialog();
+		InteractionResult result = context.showWizard("Interoperability Solver", true, true, dialog);
+		if (result != InteractionResult.FINISHED) {
+			return null;
+		}
+		return result;
+
+}
+}

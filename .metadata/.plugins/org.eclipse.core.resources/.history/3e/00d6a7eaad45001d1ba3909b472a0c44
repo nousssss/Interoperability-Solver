@@ -1,0 +1,74 @@
+package org.processmining.plugins.interoperability;
+
+import org.deckfour.xes.model.XEvent;
+import org.deckfour.xes.model.XLog;
+import org.deckfour.xes.model.XTrace;
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.contexts.uitopia.annotations.UITopiaVariant;
+import org.processmining.framework.plugin.annotations.Plugin;
+import org.processmining.framework.plugin.annotations.PluginVariant;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+import org.processmining.models.graphbased.directed.petrinet.elements.Transition;
+
+
+@Plugin
+(
+	name = "Annotation", 
+	parameterLabels = {"Petri net" , "Event Log"},
+    returnLabels = { "Annotated petrinet" }, 
+    returnTypes = { Petrinet.class },
+    userAccessible = true
+ )
+
+public class FoolingAround {
+	
+	@UITopiaVariant
+	  (
+	     affiliation = "CDTA", 
+	     author = "Bachiri Inas", 
+	     email = "ji_bachiri@esi.dz"
+	  )
+	@PluginVariant 
+	  (
+		 variantLabel = "Annotation nouss", 
+		 requiredParameterLabels = {0,1}
+	  )
+	
+	public static Petrinet annotate(UIPluginContext context, Petrinet net, XLog log) {
+		System.out.println("\nTransitions :\n");
+		for (XTrace trace : log) 
+	    {
+			for (XEvent event : trace) 
+			{
+				for (Transition trans : net.getTransitions()) 
+				{
+					String id = event.getAttributes().get("concept:name").toString();
+				    String name = trans.getLabel();
+				    System.out.println(name + " :");
+				    if (name.equals(id) && event.getAttributes().containsKey("RECEIVE_MESSAGE") ) 
+				     {
+				    	System.out.println("\t Message : " + event.getAttributes().get("KIND").toString());
+				    	System.out.println("\t Message type : " + event.getAttributes().get("RECEIVE_MESSAGE").toString());
+				    	System.out.println("\n");
+				
+				     }
+				    else if (name.equals(id) && event.getAttributes().containsKey("SEND_MESSAGE") ) 
+				     {
+				    	
+				    	System.out.println("\t Message : " + event.getAttributes().get("KIND").toString());
+				    	System.out.println("\t Message type : " + event.getAttributes().get("SEND_MESSAGE").toString());
+				    	System.out.println("\n");
+				   
+				     }
+				    else if (name.equals(id) && !event.getAttributes().containsKey("SEND_MESSAGE") && !event.getAttributes().containsKey("RECEIVE_MESSAGE") )
+				     {
+				    	System.out.println("\t Not annotated.\n");
+		
+				    }
+			    }
+		    }
+	    }
+		return net;
+
+}
+}

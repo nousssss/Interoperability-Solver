@@ -1,0 +1,89 @@
+package org.processmining.plugins.interoperability;
+
+import org.deckfour.xes.model.XLog;
+import org.processmining.contexts.uitopia.UIPluginContext;
+import org.processmining.models.graphbased.directed.petrinet.Petrinet;
+
+/**
+ * Import dialog for the Interoperability Solver Plugin
+ * 
+ * @author nousssss
+ * 
+ */
+public class SolverDialog extends javax.swing.JPanel {
+
+    /**
+     * Creates new form SolverDialog
+     */
+    public SolverDialog(UIPluginContext context, XLog log, Petrinet net) {
+        initComponents(context,log,net);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents(UIPluginContext context, XLog log, Petrinet net) {
+
+        import_xes = new javax.swing.JButton();
+        import_pnml = new javax.swing.JButton();
+        desc = new javax.swing.JLabel();
+
+        import_xes.setText("Import XES file");
+        import_xes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        import_pnml.setText("Import PNML file");
+        import_pnml.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        desc.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        desc.setText("To start, import an event log and its corresponding process model.");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(132, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(import_xes)
+                        .addGap(444, 444, 444)
+                        .addComponent(import_pnml))
+                    .addComponent(desc, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(134, 134, 134))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(43, 43, 43)
+                .addComponent(desc, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(import_xes, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(import_pnml, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(59, 59, 59))
+        );
+    }// </editor-fold>                        
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+    }                                        
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+    }                                        
+
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JButton import_xes;
+    private javax.swing.JButton import_pnml;
+    private javax.swing.JLabel desc;
+    // End of variables declaration                   
+}
+                 

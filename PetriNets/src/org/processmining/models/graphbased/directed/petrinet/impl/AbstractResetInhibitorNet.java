@@ -33,12 +33,31 @@ import org.processmining.models.graphbased.directed.petrinet.elements.Transition
 public abstract class AbstractResetInhibitorNet extends
 		AbstractDirectedGraph<PetrinetNode, PetrinetEdge<? extends PetrinetNode, ? extends PetrinetNode>> {
 
-	protected final Set<Transition> transitions;
+	public final Set<Transition> transitions;
 	protected final Set<ExpandableSubNet> substitutionTransitions;
 	protected final Set<Place> places;
 	protected final Set<Arc> arcs;
 	protected final Set<ResetArc> resetArcs;
 	protected final Set<InhibitorArc> inhibitorArcs;
+	
+	public Set<Transition> getAllTransitions() {
+		return transitions;
+	}
+	
+	public Set<Place> getAllPlaces(){
+		return places;
+	}
+	public Set<Arc> getAllArcs(){
+		return arcs;
+	}
+	public Set<ResetArc> getAllResetArcs(){
+		return resetArcs;
+	}
+	public Set<InhibitorArc> getAllInhibitorArcs(){
+		return inhibitorArcs;
+	}
+	
+	
 
 	public AbstractResetInhibitorNet(boolean allowsReset, boolean allowsInhibitors) {
 		super();
