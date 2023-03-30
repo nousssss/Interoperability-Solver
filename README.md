@@ -18,3 +18,6 @@ To install Interoperability Solver, follow these steps:
 
 
 The required packages for Interoperability Solver to function properly are taken from the ProM repo: https://svn.win.tue.nl/repos/prom/Packages/
+
+* * *
+ This project has been attributed to me by *Moufida Aouachria*, from the Advanced Technology Development Center (CDTA).
